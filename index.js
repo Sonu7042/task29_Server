@@ -7,6 +7,10 @@ const app = express();
 app.use(cors())
 
 
+app.get("/", (req, res) => {
+  res.send("working fine server")
+ })
+
 app.get("/video1", (req, res) => {
  const video1Path= path.join(__dirname, "./Public", "video1.mp4")
  const video1Stream = fs.createReadStream(video1Path);
