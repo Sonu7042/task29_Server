@@ -1,53 +1,43 @@
-app.get("/video1", (req, res) => {
-  const videoPath = path.join(__dirname, "./Public", "video1.mp4");
-  const stat = fs.statSync(videoPath);
-  const fileSize = stat.size;
-  const range = req.headers.range;
+const express = require("express");
+const path = require("path");
+const cors = require("cors");
+const fs = require("fs");
+const status= require('express-status-monitor')
 
-  if (range) {
-    const parts = range.replace(/bytes=/, "").split("-");
-    const start = parseInt(parts[0], 10);
-    const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
 
-    const chunkSize = end - start + 1;
-    const videoStream = fs.createReadStream(videoPath, { start, end });
 
-    res.writeHead(206, {
-      "Content-Range": `bytes ${start}-${end}/${fileSize}`,
-      "Accept-Ranges": "bytes",
-      "Content-Length": chunkSize,
-      "Content-Type": "video/mp4",
-    });
-    videoStream.pipe(res);
-  } else {
-    res.writeHead(200, { "Content-Length": fileSize, "Content-Type": "video/mp4" });
-    fs.createReadStream(videoPath).pipe(res);
-  }
+
+
+
+const app = express();
+app.use(cors());
+
+app.use(status())
+
+app.get("/", (req, res) => {
+  res.send("working fine server");
 });
 
+
+
+app.get("/video1", (req, res) => {
+  const video1Path = path.join(__dirname, "./Public", "video1.mp4");
+  const video1Stream = fs.createReadStream(video1Path);
+  res.writeHead(200, { "Content-Type": "video/mp4"});
+  video1Stream.pipe(res);
+});
+
+
+
+
 app.get("/video2", (req, res) => {
-  const videoPath = path.join(__dirname, "./Public", "movie.mp4");
-  const stat = fs.statSync(videoPath);
-  const fileSize = stat.size;
-  const range = req.headers.range;
+  const video1Path = path.join(__dirname, "./Public", "movie.mp4");
+  const video1Stream = fs.createReadStream(video1Path);
+  res.writeHead(200, { "Content-Type": "video/mp4" });
+  video1Stream.pipe(res);
+});
 
-  if (range) {
-    const parts = range.replace(/bytes=/, "").split("-");
-    const start = parseInt(parts[0], 10);
-    const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
 
-    const chunkSize = end - start + 1;
-    const videoStream = fs.createReadStream(videoPath, { start, end });
-
-    res.writeHead(206, {
-      "Content-Range": `bytes ${start}-${end}/${fileSize}`,
-      "Accept-Ranges": "bytes",
-      "Content-Length": chunkSize,
-      "Content-Type": "video/mp4",
-    });
-    videoStream.pipe(res);
-  } else {
-    res.writeHead(200, { "Content-Length": fileSize, "Content-Type": "video/mp4" });
-    fs.createReadStream(videoPath).pipe(res);
-  }
+app.listen(9000, () => {
+  console.log("Server is running on port 9000");
 });
